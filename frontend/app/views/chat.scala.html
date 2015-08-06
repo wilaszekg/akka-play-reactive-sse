@@ -1,0 +1,43 @@
+@() <!DOCTYPE html>
+<html>
+    <head>
+        <title data-ng-bind="pageTitle"></title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootswatch-yeti/css/bootstrap.css")" />
+        @*-- Add More CSS here -- *@
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/chat.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.css")">
+        <script src="@routes.Assets.versioned("lib/jquery/jquery.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("lib/underscorejs/underscore.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("js/chat/chat.js")" type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="row">
+            <div class="col-md-3">
+                <div id="rooms"></div>
+                <form action="/addRoom" method="post" id="addRoomForm">
+                    <input type="text" name="name" title="Room Name">
+                    <button class="addRoom">Add room</button>
+                </form>
+                <p id="disconnected" class="bg-danger">Connecting...</p>
+                <p id="connLabel" class="bg-success"></p>
+            </div>
+            <div class="col-md-9">
+                <div id="chat" class="well"></div>
+                <div class="row" id="sendMessage">
+
+                </div>
+            </div>
+        </div>
+        <div class="hide" id="sendMessageTemplate">
+            <form action="/sendMessage/" method="post">
+                <div class="col-md-10">
+                    <input type="text" name="content" title="Room Name">
+                </div>
+                <div class="col-md-2">
+                    <button class="addRoom">Post message</button>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
