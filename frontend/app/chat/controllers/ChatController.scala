@@ -6,7 +6,7 @@ import akka.cluster.sharding.ClusterSharding
 import akka.cluster.singleton.{ClusterSingletonProxy, ClusterSingletonProxySettings}
 import api.chat.{AddMessage, CreateRoom}
 import api.cluster.ChatShard
-import chat.{ChatSubscription, SubscriberCoordinator, ChatRoomsSubscriber, ChatSubscriber}
+import chat.{ChatRoomsSubscriber, ChatSubscriber, Subscribe, SubscriberCoordinator}
 import play.api.data.{Form, Forms}
 import play.api.libs.EventSource
 import play.api.libs.iteratee.{Concurrent, Enumerator}
@@ -26,7 +26,7 @@ object ChatController extends Controller {
 
   val chatShard = ClusterSharding(Akka.system()).startProxy(ChatShard.name, Some("backend"), ChatShard.extractChatId, ChatShard.extractShardId)
 
-  val chatCoordinator = Akka.system().actorOf(SubscriberCoordinator.props)
+  val subscriptionCoordinator = Akka.system().actorOf(SubscriberCoordinator.props)
 
   case class AddRoom(name: String)
 
@@ -48,11 +48,10 @@ object ChatController extends Controller {
   def roomsFeed = Action { req =>
     val userId = sessionId(req)
     val out: Enumerator[String] = Concurrent.unicast[String](channel => {
-      Akka.system().actorOf(ChatRoomsSubscriber.props(channel, userId))
+      subscriptionCoordinator ! Subscribe(req.id.toString, ChatRoomsSubscriber.props(channel, userId))
     })
 
     val host = req.headers.get("Host").getOrElse("UNKNOWN")
-
     Ok.feed(Enumerator(s"retry: $retry\n", s"data: Connected to: $host \n\n") >>> (out &> EventSource()))
       .as("text/event-stream").withHeaders("Cache-Control" -> "no-cache")
   }
@@ -60,7 +59,7 @@ object ChatController extends Controller {
   def chatFeed(chatId: String) = Action { req =>
     val userId = sessionId(req)
     val out: Enumerator[String] = Concurrent.unicast[String](onStart = channel => {
-      chatCoordinator ! ChatSubscription(userId, chatId, channel)
+      subscriptionCoordinator ! Subscribe(req.id.toString, ChatSubscriber.props(channel, userId, chatId))
     })
     Ok.feed(Enumerator(s"retry: $retry\n") >>> (out &> EventSource()))
       .as("text/event-stream").withHeaders("Cache-Control" -> "no-cache")

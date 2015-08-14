@@ -1,37 +1,29 @@
 package chat
 
-import akka.actor.{ActorLogging, Actor, Props, Terminated}
-import play.api.libs.iteratee.Concurrent
+import akka.actor._
 
-case class ChatSubscription(userId: String, chatId: String, channel: Concurrent.Channel[String])
+case class Subscribe(subscriptionId: String, subscriberProps: Props)
+
+case class Unsubscribe(subscriptionId: String)
 
 class SubscriberCoordinator extends Actor with ActorLogging {
 
-  var waitingSubscribers: Map[String, ChatSubscription] = Map()
-
   override def receive: Receive = {
-    case cs: ChatSubscription =>
-      val subscriber = context.child(cs.userId)
-      subscriber.foreach { actor =>
-        waitingSubscribers += (cs.userId -> cs)
-        context.stop(actor)
+    case Subscribe(subscriptionId, props) =>
+      log.debug("creating subscriber with id: {}", subscriptionId)
+      context.actorOf(props, subscriptionId)
+
+    case Unsubscribe(subscriptionId) =>
+      val subscriber = context.child(subscriptionId)
+      subscriber foreach {
+        log.info("Unsubscribe : {}", subscriptionId)
+        _ ! PoisonPill
       }
       if (subscriber.isEmpty) {
-        startSubscriber(cs)
-      }
-    case Terminated(actor) =>
-      println("killed subscriber {}", actor.path.name)
-      waitingSubscribers.get(actor.path.name) foreach { subscription =>
-        startSubscriber(subscription)
+        log.warning("Failed to unsubscribe not existing subscriber id {}", subscriptionId)
       }
   }
 
-  def startSubscriber(subscription: ChatSubscription) = {
-    println("creating subscriber for chat: {}", subscription.chatId)
-    val subscriber =
-      context.actorOf(ChatSubscriber.props(subscription.channel, subscription.userId, subscription.chatId), subscription.userId)
-    context.watch(subscriber)
-  }
 }
 
 object SubscriberCoordinator {
