@@ -1,12 +1,12 @@
 package chat
 
 import akka.actor.Props
-import akka.pubsub.TriggeredSubscriber
+import akka.pubsub.{DirectSubscriber, TriggeredSubscriber}
 import api.chat.AddMessage
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.Json
 
-class ChatSubscriber(channel: Concurrent.Channel[String], userId: String, chatId: String) extends TriggeredSubscriber {
+class ChatSubscriber(channel: Concurrent.Channel[String], userId: String, chatId: String) extends DirectSubscriber {
   override def viewId: String = userId + chatId
 
   override def persistenceId: String = "Chat" + chatId

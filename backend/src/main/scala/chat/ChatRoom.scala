@@ -1,9 +1,9 @@
 package chat
 
-import akka.pubsub.TriggeringPublisher
+import akka.pubsub.{DirectPublisher, TriggeringPublisher}
 import api.chat.ChatMessage
 
-class ChatRoom extends TriggeringPublisher {
+class ChatRoom extends DirectPublisher {
 
   val chatId = context.self.path.name
   override def persistenceId: String = "Chat" + chatId
