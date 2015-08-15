@@ -2,9 +2,10 @@ package chat
 
 import akka.actor.ActorLogging
 import akka.persistence.PersistentActor
+import akka.pubsub.PersistingPublisher
 import api.chat.{ChatRoom, CreateRoom}
 
-class RoomsRepository extends PersistentActor with ActorLogging {
+class RoomsRepository extends PersistingPublisher {
 
   override def persistenceId: String = "RoomsRepository"
 
@@ -17,7 +18,7 @@ class RoomsRepository extends PersistentActor with ActorLogging {
   override def receiveCommand: Receive = {
     case CreateRoom(name) =>
       counter += 1
-      persist(ChatRoom(counter, name)) { e => log.info("Persisted {}", e) }
+      publish(ChatRoom(counter, name))
     case x => log.debug("unknown message: {}", x)
   }
 }

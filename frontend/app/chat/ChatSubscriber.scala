@@ -1,28 +1,19 @@
 package chat
 
 import akka.actor.Props
-import akka.persistence.PersistentView
+import akka.pubsub.TriggeredSubscriber
 import api.chat.AddMessage
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.json.Json
 
-import scala.concurrent.duration.{FiniteDuration, _}
-
-class ChatSubscriber(channel: Concurrent.Channel[String], userId: String, chatId: String) extends PersistentView {
+class ChatSubscriber(channel: Concurrent.Channel[String], userId: String, chatId: String) extends TriggeredSubscriber {
   override def viewId: String = userId + chatId
 
   override def persistenceId: String = "Chat" + chatId
 
-  override def autoUpdateInterval: FiniteDuration = 100 millis
-
-  override def receive: Receive = {
+  override def subscribe: Receive = {
     case msg: AddMessage =>
-      log.info("received {}", msg)
       channel.push(Json.obj("content" -> msg.content).toString())
-      saveSnapshot()
-    case x =>
-      log.debug("Unknown message: {}", x)
-
   }
 }
 

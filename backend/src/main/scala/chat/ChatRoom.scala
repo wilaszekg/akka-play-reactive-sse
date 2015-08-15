@@ -1,24 +1,15 @@
 package chat
 
-import akka.actor.ActorLogging
-import akka.persistence.PersistentActor
+import akka.pubsub.TriggeringPublisher
 import api.chat.ChatMessage
 
-class ChatRoom extends PersistentActor with ActorLogging {
+class ChatRoom extends TriggeringPublisher {
 
   val chatId = context.self.path.name
-
+  override def persistenceId: String = "Chat" + chatId
   log.debug(s"Starting chat with id: $chatId")
 
-  override def receiveRecover: Receive = {
-    case x => log.debug("Recovering: {}", x)
-  }
-
   override def receiveCommand: Receive = {
-    case msg: ChatMessage => persist(msg) { event =>
-      log.info("Persisted chat event: {}", event)
-    }
+    case msg: ChatMessage => publish(msg)
   }
-
-  override def persistenceId: String = "Chat" + chatId
 }
