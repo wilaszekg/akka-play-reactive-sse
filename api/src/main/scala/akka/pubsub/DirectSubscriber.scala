@@ -11,9 +11,11 @@ case class DirectEvent(event: Any, sequenceNr: Long)
 
 trait DirectSubscriber extends PersistentView with DurableSubscriber {
 
-  override def autoUpdateInterval = 10 seconds
+  override def autoUpdateInterval = 20 seconds
 
   private var lastDirectEventSequenceNr: Long = 0L
+
+  var fakeState = 0
 
   val mediator = DistributedPubSub(context.system).mediator
 
@@ -44,7 +46,7 @@ trait DirectSubscriber extends PersistentView with DurableSubscriber {
 
     case event => subscribe.andThen { _ =>
       log.info("Event {} replayed with sequenceId {}", event, lastSequenceNr)
-      saveSnapshot()
+      saveSnapshot(fakeState)
     }.orElse(unhandledMessage)(event)
   }
 
@@ -52,7 +54,7 @@ trait DirectSubscriber extends PersistentView with DurableSubscriber {
     log.info("In order event: {}", event)
     lastDirectEventSequenceNr = sequenceNr
     subscribe.orElse(unhandledEvent)(event)
-    saveSnapshot()
+    saveSnapshot(fakeState)
   }
 
   private def unhandledEvent: Receive = {

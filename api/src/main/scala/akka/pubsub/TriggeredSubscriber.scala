@@ -10,6 +10,7 @@ case object TriggerUpdate
 trait TriggeredSubscriber extends PersistentView with DurableSubscriber {
 
   override def autoUpdateInterval: FiniteDuration = 10 seconds
+  var fakeState = 0
 
   val mediator = DistributedPubSub(context.system).mediator
 
@@ -26,7 +27,7 @@ trait TriggeredSubscriber extends PersistentView with DurableSubscriber {
 
   private def handleEvent(event: Any) = {
     log.info("Triggered subscriber handled event {}", event)
-    saveSnapshot()
+    saveSnapshot(fakeState)
   }
 
 }
