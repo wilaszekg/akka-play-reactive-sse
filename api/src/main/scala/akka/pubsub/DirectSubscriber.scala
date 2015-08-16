@@ -21,10 +21,9 @@ trait DirectSubscriber extends PersistentView with DurableSubscriber {
 
   mediator ! DistributedPubSubMediator.Subscribe(persistenceId, self)
 
-  override def snapshotSequenceNr: Long = {
-    lastDirectEventSequenceNr max lastSequenceNr
-  }
-
+  /*
+   * Overrides both lastSequenceNr and snapshotSequenceNr
+   */
   override def lastSequenceNr: Long = {
     super.lastSequenceNr max lastDirectEventSequenceNr
   }
