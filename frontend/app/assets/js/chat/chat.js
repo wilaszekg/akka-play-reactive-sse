@@ -2,6 +2,22 @@ $(function () {
 
     var activeChat;
 
+    var NickForm = function () {
+        var $addForm = $("#nickForm");
+
+        $addForm.submit(function (ev) {
+            $.ajax({
+                type: $addForm.attr('method'),
+                url: $addForm.attr('action'),
+                data: $addForm.serialize(),
+                success: function () {
+                    console.log("nick form sent");
+                }
+            });
+            ev.preventDefault();
+        });
+    };
+
     var RoomsList = function () {
 
         var rooms = [];
@@ -79,12 +95,13 @@ $(function () {
         };
 
         var addMessage = function (message) {
-            $el.append("<p>" + message + "</p>");
+            $el.append("<p>" + message.sender + "</p>");
+            $el.append("<p>" + message.content + "</p>");
         };
 
         chatFeed.onmessage = function (event) {
             console.log("Received chat message");
-            addMessage(event.data);
+            addMessage(JSON.parse(event.data));
         };
 
         this.close = function () {
@@ -119,6 +136,8 @@ $(function () {
             $messageFormWrapper.empty();
         };
     };
+
+    new NickForm();
 
     var roomsList = new RoomsList();
 

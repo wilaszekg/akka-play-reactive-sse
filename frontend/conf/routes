@@ -3,11 +3,12 @@
 # ~~~~
 
 
-GET         /chat                          chat.controllers.ChatController.main
-GET         /roomsFeed                     chat.controllers.ChatController.roomsFeed
-GET         /chatFeed/:chatId              chat.controllers.ChatController.chatFeed(chatId: String)
-POST        /addRoom                       chat.controllers.ChatController.addRoom
-POST        /sendMessage/:chatId           chat.controllers.ChatController.postChatMessage(chatId: String)
+GET         /chat                       chat.controllers.ChatController.main
+GET         /roomsFeed                  chat.controllers.ChatController.roomsFeed
+GET         /chatFeed/:chatId           chat.controllers.ChatController.chatFeed(chatId: String)
+POST        /addRoom                    chat.controllers.ChatController.addRoom
+POST        /nick                       chat.controllers.ChatController.changeNick
+POST        /sendMessage/:chatId        chat.controllers.ChatController.postChatMessage(chatId: String)
 
 
 
@@ -16,4 +17,4 @@ POST        /sendMessage/:chatId           chat.controllers.ChatController.postC
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                  controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

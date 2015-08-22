@@ -32,6 +32,8 @@ object ChatController extends Controller {
 
   case class PostMessage(content: String)
 
+  case class NickChange(nick: String)
+
   val addRoomForm = Form(Forms.mapping(
     "name" -> Forms.text
   )(AddRoom.apply)(AddRoom.unapply))
@@ -40,8 +42,13 @@ object ChatController extends Controller {
     "content" -> Forms.text
   )(PostMessage.apply)(PostMessage.unapply))
 
+  val nickChangeForm = Form(Forms.mapping(
+    "nick" -> Forms.text
+  )(NickChange.apply)(NickChange.unapply))
+
   def main = Action {
-    Ok(views.html.chat()).withSession("userId" -> UUID.randomUUID().toString)
+    val nickName = "~guest";
+    Ok(views.html.chat(nickName)).withSession("userId" -> UUID.randomUUID().toString, "nick" -> nickName)
   }
 
 
@@ -77,8 +84,15 @@ object ChatController extends Controller {
 
   def postChatMessage(chatId: String) = Action { implicit req =>
     val messageForm = postMessageForm.bindFromRequest.get
-    chatShard ! AddMessage(chatId, messageForm.content)
-    Ok
+    req.session.get("nick").map { nick =>
+      chatShard ! AddMessage(chatId, messageForm.content, nick)
+      Ok
+    }.getOrElse(Unauthorized)
+  }
+
+  def changeNick = Action { implicit req =>
+    val nickForm = nickChangeForm.bindFromRequest.get
+    Ok.withSession(req.session + ("nick" -> nickForm.nick))
   }
 
   private def sessionId(request: Request[_]) = request.session.get("userId").get

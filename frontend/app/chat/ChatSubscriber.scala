@@ -13,7 +13,7 @@ class ChatSubscriber(channel: Concurrent.Channel[String], userId: String, chatId
 
   override def subscribe: Receive = {
     case msg: AddMessage =>
-      channel.push(Json.obj("content" -> msg.content).toString())
+      channel.push(Json.obj("content" -> msg.content, "sender" -> msg.sentBy).toString())
   }
 }
 

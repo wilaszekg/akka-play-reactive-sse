@@ -4,5 +4,5 @@ trait ChatMessage {
   def chatId: String
 }
 
-case class AddMessage(chatId: String, content: String) extends ChatMessage
+case class AddMessage(chatId: String, content: String, sentBy: String) extends ChatMessage
 

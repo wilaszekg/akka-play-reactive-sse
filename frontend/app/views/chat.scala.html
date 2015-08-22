@@ -1,4 +1,4 @@
-@() <!DOCTYPE html>
+@(nickName: String) <!DOCTYPE html>
 <html>
     <head>
         <title data-ng-bind="pageTitle"></title>
@@ -13,6 +13,10 @@
     <body>
         <div class="row">
             <div class="col-md-3">
+                <form action="/nick" method="post" id="nickForm">
+                    <input type="text" name="nick" value="@nickName"/>
+                    <button class="sendNick">Change nick</button>
+                </form>
                 <div id="rooms"></div>
                 <form action="/addRoom" method="post" id="addRoomForm">
                     <input type="text" name="name" title="Room Name">

@@ -42,7 +42,7 @@ class Sender(chatShard: ActorRef, chatId: String, newMsgAfter: Int, subscribersQ
   }
 
   private def sendToAll() = {
-    chatShard ! AddMessage(chatId, currentSequenceNr.toString)
+    chatShard ! AddMessage(chatId, currentSequenceNr.toString, "test sender")
 
     if (currentSequenceNr == 1) {
       start = System.currentTimeMillis()
