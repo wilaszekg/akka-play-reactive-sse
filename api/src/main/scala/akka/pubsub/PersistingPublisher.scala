@@ -11,7 +11,7 @@ trait PersistingPublisher extends PersistentActor with DurablePublisher with Act
 
   override final def publish(event: Any) = {
     persist(event) { e =>
-      log.info("Event persisted: {}", e)
+      log.debug("Event persisted: {}", e)
     }
   }
 

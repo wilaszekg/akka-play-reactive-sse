@@ -30,7 +30,7 @@ trait DirectSubscriber extends PersistentView with DurableSubscriber {
 
   override def receive: Receive = {
     case DirectEvent(event, sequenceNr) =>
-      log.info("Received direct event: {} with sequenceNr {}", event, sequenceNr)
+      log.debug("Received direct event: {} with sequenceNr {}", event, sequenceNr)
       if (sequenceNr == snapshotSequenceNr + 1)
         inOrderEvent(event, sequenceNr)
       else
@@ -44,13 +44,13 @@ trait DirectSubscriber extends PersistentView with DurableSubscriber {
       log.debug("Subscribe ACK {}", ack)
 
     case event => subscribe.andThen { _ =>
-      log.info("Event {} replayed with sequenceId {}", event, lastSequenceNr)
+      log.debug("Event {} replayed with sequenceId {}", event, lastSequenceNr)
       saveSnapshot(fakeState)
     }.orElse(unhandledMessage)(event)
   }
 
   private def inOrderEvent(event: Any, sequenceNr: Long) = {
-    log.info("In order event: {}", event)
+    log.debug("In order event: {}", event)
     lastDirectEventSequenceNr = sequenceNr
     subscribe.orElse(unhandledEvent)(event)
     saveSnapshot(fakeState)
@@ -61,7 +61,7 @@ trait DirectSubscriber extends PersistentView with DurableSubscriber {
   }
 
   private def unhandledMessage: Receive = {
-    case x => log.info("Message not handled by subscriber: {}", x)
+    case x => log.debug("Message not handled by subscriber: {}", x)
   }
 
 }

@@ -12,10 +12,10 @@ trait PersistentSubscriber extends PersistentView with DurableSubscriber {
 
   override def receive: Receive = subscribe
     .andThen(handleEvent)
-    .orElse { case msg => log.info("Unhandled: {}", msg) }
+    .orElse { case msg => log.debug("Unhandled: {}", msg) }
 
   private def handleEvent(event: Any) = {
-    log.info("Persistent subscriber handled event {}", event)
+    log.debug("Persistent subscriber handled event {}", event)
     saveSnapshot(fakeState)
   }
 

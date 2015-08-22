@@ -68,6 +68,7 @@ scalacOptions in ThisBuild ++= Seq(
 
 addCommandAlias("seed1", ";project backend;runMain backend.Backend 2551")
 addCommandAlias("seed2", ";project backend;runMain backend.Backend 2552")
+addCommandAlias("perf2", ";project backend;runMain performance.Performance 2552")
 addCommandAlias("front9001", ";project frontend;run 9001")
 addCommandAlias("front9002", ";project frontend;run 9002")
 

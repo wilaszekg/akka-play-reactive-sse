@@ -22,11 +22,11 @@ trait TriggeredSubscriber extends PersistentView with DurableSubscriber {
 
   private def handleMessage: Receive = {
     case TriggerUpdate => self ! Update()
-    case msg => log.info("Unhandled: {}", msg)
+    case msg => log.debug("Unhandled: {}", msg)
   }
 
   private def handleEvent(event: Any) = {
-    log.info("Triggered subscriber handled event {}", event)
+    log.debug("Triggered subscriber handled event {}", event)
     saveSnapshot(fakeState)
   }
 
