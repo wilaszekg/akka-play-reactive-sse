@@ -95,8 +95,10 @@ $(function () {
         };
 
         var addMessage = function (message) {
-            $el.append("<p>" + message.sender + "</p>");
-            $el.append("<p>" + message.content + "</p>");
+            $el.append(
+                "<div class=\"post\"><span class=\"author\">/auth</span><span class=\"message\">/msg</span></div>"
+                    .replace("/auth", message.sender)
+                    .replace("/msg", message.content)).scrollTop(1000000);
         };
 
         chatFeed.onmessage = function (event) {
@@ -126,7 +128,7 @@ $(function () {
                 url: $form.attr('action') + id,
                 data: $form.serialize(),
                 success: function () {
-                    console.log("post sent");
+                    $form.find('input').val("");
                 }
             });
             ev.preventDefault();
