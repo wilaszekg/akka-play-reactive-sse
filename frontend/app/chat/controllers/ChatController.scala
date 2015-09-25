@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object ChatController extends Controller {
 
-  val retry = 1000
+  val retry = 3000
 
   val roomsRepository = Akka.system().actorOf(ClusterSingletonProxy.props(
     singletonManagerPath = "/user/roomsRepositorySingleton",
@@ -70,10 +70,6 @@ object ChatController extends Controller {
     })
     Ok.feed(Enumerator(s"retry: $retry\n") >>> (out &> EventSource()))
       .as("text/event-stream").withHeaders("Cache-Control" -> "no-cache")
-    /*.as( "text/event-stream")
-        .withHeaders("Content-Type"->"text/event-stream")
-        .withHeaders("Cache-Control"->"no-cache")
-        .withHeaders("Connection"->"keep-alive")*/
   }
 
   def addRoom = Action { implicit req =>

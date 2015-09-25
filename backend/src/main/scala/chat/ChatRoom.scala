@@ -10,6 +10,8 @@ class ChatRoom extends DirectPublisher {
   log.debug(s"Starting chat with id: $chatId")
 
   override def receiveCommand: Receive = {
-    case msg: ChatMessage => publish(msg)
+    case msg: ChatMessage =>
+      log.info(s"Chat message $msg")
+      publish(msg)
   }
 }

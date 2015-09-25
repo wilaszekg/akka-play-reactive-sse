@@ -13,6 +13,7 @@ trait DirectPublisher extends DurablePublisher with PersistentActor with ActorLo
 
   override final def publish(event: Any) = {
     persist(event) { e =>
+      log.debug(s"Persisted $e")
       mediator ! DistributedPubSubMediator.Publish(persistenceId, DirectEvent(e, lastSequenceNr))
     }
   }

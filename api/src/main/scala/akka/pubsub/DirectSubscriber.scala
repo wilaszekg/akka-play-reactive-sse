@@ -30,7 +30,7 @@ trait DirectSubscriber extends PersistentView with DurableSubscriber {
 
   override def receive: Receive = {
     case DirectEvent(event, sequenceNr) =>
-      log.debug("Received direct event: {} with sequenceNr {}", event, sequenceNr)
+      log.info("Received direct event: {} with sequenceNr {}", event, sequenceNr)
       if (sequenceNr == snapshotSequenceNr + 1)
         inOrderEvent(event, sequenceNr)
       else
@@ -41,7 +41,7 @@ trait DirectSubscriber extends PersistentView with DurableSubscriber {
     case so: SnapshotOffer =>
       log.debug("Snapshot offer {}", so)
     case ack: SubscribeAck =>
-      log.debug("Subscribe ACK {}", ack)
+      log.info("Subscribe ACK {}", ack)
 
     case event => subscribe.andThen { _ =>
       log.debug("Event {} replayed with sequenceId {}", event, lastSequenceNr)
