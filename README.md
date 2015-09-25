@@ -16,3 +16,15 @@ There are three different types of durable subscription:
 ## Running application
 To run the application you need a database and its driver for Akka Persistence in version **2.4**. 
 The app is configured to work with Cassandra and the driver had to be installed locally from snapshot version. It takes a few seconds, but for further info and official releases look at [Cassandra plugin Github](https://github.com/krasserm/akka-persistence-cassandra/)
+
+To run cluster nodes, you can use sbt aliases for backend seed nodes:
+`sbt seed1`
+`sbt seed2`
+And for frontend nodes:
+`sbt front9001`
+`sbt front9002`
+which run two web servers on ports 9001 and 9002.
+
+To play with all features, including frontend nodes and server-to-client channels recovery, you need a load balancer dispatching to ports 9001 and 9002. 
+To change ports configuration, look at `build.sbt` file and commands aliases defined there.
+
